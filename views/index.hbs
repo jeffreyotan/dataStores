@@ -1,0 +1,37 @@
+<div class="row">
+    <div class="col-4">
+        <h2>Playstore</h2>
+    </div>
+    <div class="col">
+        <h2>{{search}}</h2>
+    </div>
+</div>
+<div class="row">
+    <div class="col-4">
+        <form action="/search" method="GET">
+            <div class="form-group">
+                <label for="textInput">Please input your desired search term:</label>
+                <input type="text" class="form-control" name="textInput" id="textInput">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+    <div class="col">
+        <div class="row">
+            <div class="col-2">App_ID</div>
+            <div class="col-4">Name</div>
+            <div class="col-3">Category</div>
+            <div class="col-1">Rating</div>
+            <div class="col-2">Installs</div>
+        </div>
+        {{#each itemsToDisplay}}
+            <div class="row">
+                <div class="col-2">{{this.app_id}}</div>
+                <div class="col-4">{{this.name}}</div>
+                <div class="col-3">{{this.category}}</div>
+                <div class="col-1">{{this.rating}}</div>
+                <div class="col-2">{{this.installs}}</div>
+            </div>
+        {{/each}}
+    </div>
+</div>
