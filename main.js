@@ -8,7 +8,11 @@ const mysql = require('mysql2/promise');
 const PORT = parseInt(process.argv[2]) || parseInt(process.env.APP_PORT) || 3000;
 
 // SQL statements
-const SQL_FIND_BY_NAME = 'select * from apps where name like ? limit ?'; // ? are the placeholders, never use string concatenation
+const SQL_FIND_BY_NAME = 'select * from apps where name like ? limit ? offset ?'; // ? are the placeholders, never use string concatenation
+const SQL_COUNT_BY_NAME = 'select count(*) from apps where name like ? limit ? offset ?';
+
+const OFFSETINTERVAL = 10;
+let numRecords = 0;
 
 // create the database connection pool
 const pool = mysql.createPool({
@@ -53,26 +57,33 @@ app.set('view engine', 'hbs');
 // define middleware to handle the various routes
 app.get('/', (req, res, next) => {
     res.status(200).type('text/html');
-    res.render('index');
+    res.render('index', { search: "", offset: 0 });
 });
 
 app.get('/search', async (req, res, next) => {
     const search = req.query['textInput'];
     console.info('Search Key: ', search);
+    let currOffset = parseInt(req.query['offset']) || 0;
+
+    if(req.query['btnPressed'] === 'prev') {
+        currOffset -= Math.max(0, OFFSETINTERVAL);
+    } else if(req.query['btnPressed'] === 'next') {
+        currOffset += OFFSETINTERVAL;
+    }
 
     // acquire a connection from the pool
     const conn = await pool.getConnection();
 
     try {
         // perform the query
-        const result = await conn.query(SQL_FIND_BY_NAME, [ `%${search}%`, 10 ]);
+        const result = await conn.query(SQL_FIND_BY_NAME, [ `%${search}%`, 10, currOffset ]);
         const records = result[0];
 
         console.info('records = ', records);
 
         res.status(200).type('text/html');
         // res.send(`Received search request with textInput: ${search}`);
-        res.render('index', { search: `Results for ${search} are:`, itemsToDisplay: records });
+        res.render('index', { search: search, itemsToDisplay: records, offset: currOffset });
     } catch(e) {
         console.error('Internal server error occurred [Express-DB].', e);
         res.status(500).type('text/html');

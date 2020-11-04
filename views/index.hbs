@@ -3,7 +3,7 @@
         <h2>Playstore</h2>
     </div>
     <div class="col">
-        <h2>{{search}}</h2>
+        <h2>Results for {{search}} are:</h2>
     </div>
 </div>
 <div class="row">
@@ -33,5 +33,13 @@
                 <div class="col-2">{{this.installs}}</div>
             </div>
         {{/each}}
+        <div class="row justify-content-md-center">
+            <form method="GET" action="/search">
+                <button type="submit" name="btnPressed" value="prev">Prev</button>
+                <button type="submit" name="btnPressed" value="next">Next</button>
+                <input type="hidden" name="textInput" value="{{search}}">
+                <input type="hidden" name="offset" value="{{offset}}">
+            </form>
+        </div>
     </div>
 </div>
